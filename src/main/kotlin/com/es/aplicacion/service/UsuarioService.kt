@@ -115,4 +115,43 @@ class UsuarioService : UserDetailsService {
         )
 
     }
+
+    // Funciones de gestión de usuarios , incorporadas por mi
+    fun getAllUsers(): List<UsuarioDTO> {
+        return usuarioRepository.findAll().map { usuario ->
+            UsuarioDTO(usuario.username, usuario.email, usuario.roles)
+        }
+    }
+
+    fun getUserByUsername(username: String): UsuarioDTO {
+        val usuario = usuarioRepository.findByUsername(username).orElseThrow {
+            UnauthorizedException("$username no existente")
+        }
+        return UsuarioDTO(usuario.username, usuario.email, usuario.roles)
+    }
+
+    fun updateUser(username: String, usuarioUpdateDTO: UsuarioRegisterDTO): UsuarioDTO {
+        val usuario = usuarioRepository.findByUsername(username).orElseThrow {
+            UnauthorizedException("$username no existente")
+        }
+
+        val updatedUsuario = usuario.copy(
+            username = usuarioUpdateDTO.username,
+            password = passwordEncoder.encode(usuarioUpdateDTO.password),
+            email = usuarioUpdateDTO.email,
+            roles = usuarioUpdateDTO.rol,
+            direccion = usuarioUpdateDTO.direccion
+        )
+
+        usuarioRepository.save(updatedUsuario)
+
+        return UsuarioDTO(updatedUsuario.username, updatedUsuario.email, updatedUsuario.roles)
+    }
+
+    fun deleteUser(username: String) {
+        val usuario = usuarioRepository.findByUsername(username).orElseThrow {
+            UnauthorizedException("$username no existente")
+        }
+        usuarioRepository.delete(usuario)
+    }
 }
