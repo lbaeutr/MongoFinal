@@ -94,6 +94,6 @@ class UsuarioController {
     @DeleteMapping("/{username}")
     fun deleteUser(@PathVariable username: String): ResponseEntity<Void> {
         usuarioService.deleteUser(username)
-        return ResponseEntity(HttpStatus.NO_CONTENT)
+        return ResponseEntity(HttpStatus.OK)
     }
 }
